@@ -1,7 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const cors = require('cors'); // Agrega esta línea
 const app = express();
 const path = require('path');
 const ejs = require('ejs');
@@ -18,15 +17,13 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ extended: true }));
 
-// Middleware para CORS
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', 'http://www.localhost:8100');
-//   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-//   res.header('Access-Control-Allow-Headers', 'Content-Type');
-//   next();
-// });
-
-app.use(cors({ origin: 'http://www.localhost:8100' }));
+//Middleware para CORS
+ app.use((req, res, next) => {
+   res.header('Access-Control-Allow-Origin', 'http://localhost:8100');
+   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+   next();
+ });
 
 
 // routes

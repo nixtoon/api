@@ -52,7 +52,8 @@ app.get('/listar-cursos', curso.listarCursos);
 // agregar curso
 app.post('/agregar-curso', curso.addCurso);
 
-
+// get cursos
+app.get('/buscar-cursos', curso.getCursos);
 
 
 // lista de Endpoints de las asistencia

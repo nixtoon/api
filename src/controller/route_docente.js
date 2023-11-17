@@ -23,12 +23,13 @@ let listarDocentes = async (req, res) => {
 
 // agregar docente
 let addDocente = async (req, res) => {
-  const { nombre_docente, password_docente } = req.body;
+  const { nombre_docente, password_docente, cursos } = req.body;
 
   try {
     const docente = new Docente({
       nombre_docente,
       password_docente,
+      cursos,
     });
     
     const savedDocente = await docente.save();

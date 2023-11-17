@@ -5,6 +5,7 @@ const pool = require("../settings/db");
 const Curso = require("../models/model_curso");
 const Docente = require("../models/model_docente");
 const Usuario = require("../models/model_usuario");
+const { ObjectId } = require('mongodb');
 
 // listar Cursos
 let listarCursos = async (req, res) => {
@@ -19,6 +20,33 @@ let listarCursos = async (req, res) => {
       status: 400,
       mensaje: "Error al leer el archivo",
       err,
+    });
+  }
+};
+
+
+let getCursos = async (req, res) => {
+  try {
+    const { docenteId } = req.query;
+
+    if (!docenteId) {
+      return res.status(400).json({ status: 400, mensaje: "Id docente es requerido" });
+    }
+
+    // Realiza la búsqueda en la base de datos por nombre de usuario y contraseña
+    const cursos = await Curso.find({ docenteId: new ObjectId(docenteId) });
+
+    if (!cursos || cursos.length === 0) {
+      return res.status(404).json({ status: 404, mensaje: "Cursos no encontrados." });
+    }
+
+    res.json({ status: 200, cursos });
+  } catch (err) {
+    console.error('Error al obtener los cursos:', err);
+    res.status(500).json({
+      status: 500,
+      mensaje: "Error al obtener los cursos",
+      err
     });
   }
 };
@@ -77,4 +105,5 @@ let addCurso = async (req, res) => {
 module.exports = {
   listarCursos,
   addCurso,
+  getCursos
 };
