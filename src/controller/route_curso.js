@@ -3,9 +3,9 @@
 const pool = require("../settings/db");
 // Modelo BD
 const Curso = require("../models/model_curso");
-const Docente = require("../models/model_docente");
-const Usuario = require("../models/model_usuario");
-const { ObjectId } = require('mongodb');
+const Usuario = require("../models/model_usuarios");
+const Profesor = require("../models/model_profesores");
+const Alumno = require("../models/model_alumno");
 
 // listar Cursos
 let listarCursos = async (req, res) => {
@@ -24,73 +24,78 @@ let listarCursos = async (req, res) => {
   }
 };
 
-
 let getCursos = async (req, res) => {
   try {
-    const { docenteId } = req.query;
+    const { profesorid } = req.query;
 
-    if (!docenteId) {
-      return res.status(400).json({ status: 400, mensaje: "Id docente es requerido" });
+    const profesor = await Profesor.findOne({ id: profesorid });
+
+    if (!profesor) {
+      return res
+        .status(404)
+        .json({ status: 404, mensaje: "Profesor no encontrado." });
     }
 
-    // Realiza la búsqueda en la base de datos por nombre de usuario y contraseña
-    const cursos = await Curso.find({ docenteId: new ObjectId(docenteId) });
+    const cursos = await Curso.find({ id: { $in: profesor.cursos } });
 
     if (!cursos || cursos.length === 0) {
-      return res.status(404).json({ status: 404, mensaje: "Cursos no encontrados." });
+      return res
+        .status(404)
+        .json({ status: 404, mensaje: "Cursos no encontrados para el profesor." });
     }
 
     res.json({ status: 200, cursos });
   } catch (err) {
-    console.error('Error al obtener los cursos:', err);
+    console.error("Error al obtener los cursos:", err);
     res.status(500).json({
       status: 500,
       mensaje: "Error al obtener los cursos",
-      err
+      err,
     });
   }
 };
 
+
 // agregar curso
 
 let addCurso = async (req, res) => {
-  const { nombre_curso, sigla_curso, docente } = req.body;
+  const { id, nombre, codigo, seccion, alumnos } = req.body;
 
   try {
-    // Verifica que Docente esté definido
-    if (!Docente) {
-      return res.status(500).json({
-        status: 500,
-        mensaje: "Error al guardar el curso",
-        err: "Docente is not defined",
-      });
-    }
-
     const curso = new Curso({
-      nombre_curso,
-      sigla_curso,
+      id,
+      nombre,
+      codigo,
+      seccion,
+      alumnos,
     });
 
-    // Agregar docente si se proporciona
-    if (docente) {
-      const docenteExistente = await Docente.findById(docente);
-      if (docenteExistente) {
-        curso.docente = docenteExistente._id;
+    // Agregar alumnos si se proporciona
+    if (alumnos) {
+      // Convertir la cadena de alumnos a un array de números
+      const idsAlumnos = alumnos.split(',').map(Number);
+
+      // Buscar los alumnos por sus IDs
+      const alumnosExistentes = await Alumno.find({ id: { $in: idsAlumnos } });
+
+      if (alumnosExistentes.length === idsAlumnos.length) {
+        // Todos los alumnos existen, asignar los IDs al array
+        curso.alumnos = idsAlumnos;
       } else {
+        // Al menos uno de los alumnos no fue encontrado
         return res.status(400).json({
           status: 400,
-          mensaje: "Docente no encontrado",
+          mensaje: "Uno o más alumnos no encontrados",
         });
       }
     }
 
     const savedCurso = await curso.save();
 
-
     res.json({
       status: 200,
       mensaje: "Curso guardado exitosamente",
-      savedCurso
+      savedCurso,
     });
   } catch (err) {
     console.error(err); // Agregar esta línea para imprimir el error en la consola
@@ -105,5 +110,5 @@ let addCurso = async (req, res) => {
 module.exports = {
   listarCursos,
   addCurso,
-  getCursos
+  getCursos,
 };

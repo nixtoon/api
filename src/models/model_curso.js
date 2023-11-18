@@ -1,9 +1,12 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require("mongoose");
 
-const Curso = Schema({
-  nombre_curso: { type: String, required: [true, 'Nombre del curso obligatorio'] },
-  sigla_curso: { type: String, required: [true, 'Sigla obligatoria'] },
-  docente: { type: Schema.Types.ObjectId, ref: 'Docente' },
+const Curso = new Schema({
+  id: { type: Number, required: true},
+  nombre: { type: String },
+  codigo: { type: String },
+  seccion: { type: String },
+  alumnos: [{  type: Number, ref: 'Alumno' }],
 });
 
-module.exports = model('curso', Curso);
+module.exports = model('Curso', Curso);
+

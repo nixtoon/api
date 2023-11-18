@@ -1,19 +1,25 @@
 const Asistencia = require('../models/model_asistencia');
+const Curso = require('../models/model_curso');
 
 // Método para registrar la asistencia
 const registrarAsistencia = async (req, res) => {
   const { cursoId, presente } = req.body;
 
   try {
+    // Validar si el curso existe
+    const cursoExistente = await Curso.findById(cursoId);
+    if (!cursoExistente) {
+      return res.status(400).json({
+        status: 400,
+        mensaje: 'El curso especificado no existe',
+      });
+    }
 
-    // Crear un nuevo documento de asistencia
-    const asistencia = new Asistencia({
+    // Crear un nuevo documento de asistencia utilizando el método create de Mongoose
+    const savedAsistencia = await Asistencia.create({
       curso: cursoId,
-      presente: presente || false, // Si no se proporciona, establecer como falso por defecto
+      presente: presente || false,
     });
-
-    // Guardar el registro de asistencia en la base de datos
-    const savedAsistencia = await asistencia.save();
 
     res.json({
       status: 200,
@@ -21,6 +27,15 @@ const registrarAsistencia = async (req, res) => {
       data: savedAsistencia,
     });
   } catch (err) {
+    // Manejar errores específicos de Mongoose, como ValidationError
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({
+        status: 400,
+        mensaje: 'Error de validación al registrar la asistencia',
+        err: err.message,
+      });
+    }
+
     console.error(err);
     res.status(500).json({
       status: 500,
