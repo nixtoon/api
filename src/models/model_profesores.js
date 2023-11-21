@@ -5,7 +5,6 @@ const Profesor = new Schema({
   user: { type: String, required: true },
   password: { type: String, required: true},
   correo: { type: String, required: true },
-  perfil: { type: Number },
 });
 
 module.exports = model('Profesor', Profesor);
