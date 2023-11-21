@@ -1,11 +1,11 @@
 const { Schema, model } = require("mongoose");
 
 const Curso = new Schema({
-  id: { type: Number, required: true},
   nombre: { type: String },
   codigo: { type: String },
   seccion: { type: String },
-  alumnos: [{  type: Number, ref: 'Alumno' }],
+  profesor: { type: Schema.Types.ObjectId, ref: 'Profesor' },
+  alumnos: [{ type: Schema.Types.ObjectId, ref: 'Alumno' }],
 });
 
 module.exports = model('Curso', Curso);

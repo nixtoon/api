@@ -1,8 +1,8 @@
 const { Schema, model } = require("mongoose");
 
 const Asistencia = Schema({
-  alumno: { type: Number, ref: 'Alumno' },
-  curso: { type: Number, ref: 'Curso' },
+  alumno: { type: Schema.Types.ObjectId, ref: 'Alumno' },
+  curso: { type: Schema.Types.ObjectId, ref: 'Curso' },
   fecha: { type: Date, default: Date.now },
   presente: {type: Boolean, default: false },
 });

@@ -2,24 +2,15 @@ const pool = require("../settings/db");
 const Profesor = require("../models/model_profesores");
 const Curso = require('../models/model_curso');
 
+
+
 // agregar profesor
 let addProfesor = async (req, res) => {
-  const { id, nombre, user, password, correo, cursos } = req.body;
+  const { nombre, user, password, correo, perfil } = req.body;
 
   try {
-    const profesor = new Profesor({ id, nombre, user, password, correo });
-    // Agregar cursos si se proporciona
-    if (cursos) {
-      const cursoExiste = await Curso.findOne({ id: cursos });
-      if (cursoExiste) {
-        profesor.cursos = [cursoExiste.id];
-      } else {
-        return res.status(400).json({
-          status: 400,
-          mensaje: "Curso no encontrado",
-        });
-      }
-    }
+    const profesor = new Profesor({ nombre, user, password, correo, perfil });
+  
 
     const savedProfesor = await profesor.save();
 
@@ -38,6 +29,7 @@ let addProfesor = async (req, res) => {
   }
 };
 
+// login profesor
 let loginProfesor = async (req, res) => {
   try {
     const { user, password } = req.body;
@@ -47,8 +39,7 @@ let loginProfesor = async (req, res) => {
     }
 
     // Realiza la búsqueda en la base de datos por nombre de usuario y contraseña
-    const profesor = await Profesor.findOne({ user, password });
-
+    const profesor = await Profesor.findOne({ user, password })
     if (!profesor) {
       return res.status(404).json({ status: 404, mensaje: "Usuario no encontrado." });
     }
@@ -56,12 +47,11 @@ let loginProfesor = async (req, res) => {
     res.json({
       status: 200,
       usuario: {
-        id: profesor.id,
+        _id: profesor._id, // Utiliza _id para el identificador único
         nombre: profesor.nombre,
         user: profesor.user,
         correo: profesor.correo,
-        cursos: profesor.cursos
-      }
+      },
     });
   } catch (err) {
     res.status(500).json({

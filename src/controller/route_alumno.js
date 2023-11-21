@@ -4,11 +4,11 @@ const Alumno = require("../models/model_alumno");
 // agregar alumno 
 let addAlumno = async (req, res) => {
 
-  const { id, nombre, user, password, correo, perfil } = req.body;
+  const { nombre, user, password, correo, perfil } = req.body;
 
   try {
 
-    const alumno = new Alumno({id, nombre, user, password, correo, perfil });
+    const alumno = new Alumno({ nombre, user, password, correo, perfil });
 
     const savedAlumno = await alumno.save();
 
@@ -29,6 +29,7 @@ let addAlumno = async (req, res) => {
 
 };
 
+// login alumno
 let loginAlumno = async (req, res) => {
   try {
     const { user, password } = req.body;
