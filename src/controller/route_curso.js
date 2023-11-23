@@ -5,7 +5,7 @@ const pool = require("../settings/db");
 const Curso = require("../models/model_curso");
 const Profesor = require("../models/model_profesores");
 const Alumno = require("../models/model_alumno");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 // listar Cursos
 let listarCursos = async (req, res) => {
@@ -24,6 +24,7 @@ let listarCursos = async (req, res) => {
   }
 };
 
+// buscar curso por id profesor
 let getCursos = async (req, res) => {
   try {
     const { profesorId } = req.query;
@@ -59,7 +60,7 @@ let getCursos = async (req, res) => {
     }
 
     // Devolver los cursos en un arreglo en la respuesta
-    const cursosArray = cursos.map(curso => ({
+    const cursosArray = cursos.map((curso) => ({
       _id: curso._id,
       nombre: curso.nombre,
       codigo: curso.codigo,
@@ -76,7 +77,6 @@ let getCursos = async (req, res) => {
     });
   }
 };
-
 
 // agregar curso
 
@@ -95,7 +95,7 @@ let addCurso = async (req, res) => {
     // Agregar alumnos si se proporciona
     if (alumnos) {
       // Convertir la cadena de alumnos a un array de ObjectID
-      const idsAlumnos = alumnos.map(_id => new mongoose.Types.ObjectId(_id));
+      const idsAlumnos = alumnos.map((_id) => new mongoose.Types.ObjectId(_id));
 
       // Buscar los alumnos por sus IDs
       const alumnosExistentes = await Alumno.find({ _id: { $in: idsAlumnos } });
@@ -129,8 +129,52 @@ let addCurso = async (req, res) => {
   }
 };
 
+// buscar curso por id del curso
+let detalleCurso = async (req, res) => {
+  try {
+    const { cursoId } = req.query;
+
+    if (!cursoId) {
+      return res.status(400).json({
+        status: 400,
+        mensaje: "Se requiere proporcionar el ID del curso.",
+      });
+    }
+
+    const objectIdCurso = new mongoose.Types.ObjectId(cursoId);
+
+    const curso = await Curso.findOne({ _id: objectIdCurso });
+
+    if (!curso) {
+      return res.status(404).json({
+        status: 404,
+        mensaje: "Curso no encontrado.",
+      });
+    }
+
+    return res.status(200).json({
+      status: 200,
+      mensaje: "Curso encontrado exitosamente.",
+      curso: {
+        id: curso._id,
+        nombre : curso.nombre,
+        codigo : curso.codigo,
+        seccion: curso.seccion,
+        profesor: curso.profesor,
+      }
+    });
+  } catch (err) {
+    console.error(err); // Registra cualquier error en la consola
+    return res.status(500).json({
+      status: 500,
+      mensaje: "Error interno del servidor.",
+    });
+  }
+};
+
 module.exports = {
   listarCursos,
   addCurso,
   getCursos,
+  detalleCurso
 };

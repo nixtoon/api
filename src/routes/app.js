@@ -13,5 +13,6 @@ app.post('/agregar-curso', curso.addCurso);
 app.post('/agregar-profesor', profesor.addProfesor);
 app.get('/cursos', curso.getCursos);
 app.get('/listar-cursos', curso.listarCursos);
+app.get('/detalle-curso', curso.detalleCurso)
 
 module.exports = app;
