@@ -1,11 +1,8 @@
-//const express = require('express')
-// Conexion BD
-const pool = require("../settings/db");
 // Modelo BD
 const Curso = require("../models/model_curso");
-const Profesor = require("../models/model_profesores");
-const Alumno = require("../models/model_alumno");
 const mongoose = require("mongoose");
+const Usuario = require("../models/model_usuario");
+const pool = require("../settings/db");
 
 // listar Cursos
 let listarCursos = async (req, res) => {
@@ -27,9 +24,9 @@ let listarCursos = async (req, res) => {
 // buscar curso por id profesor
 let getCursos = async (req, res) => {
   try {
-    const { profesorId } = req.query;
+    const { id } = req.query;
 
-    if (!profesorId) {
+    if (!id) {
       return res.status(400).json({
         status: 400,
         mensaje: "Se requiere proporcionar el ID del profesor.",
@@ -37,10 +34,10 @@ let getCursos = async (req, res) => {
     }
 
     // Convertir el profesorId a un ObjectId de mongoose
-    const objectIdProfesor = new mongoose.Types.ObjectId(profesorId);
+    const objectIdProfesor = new mongoose.Types.ObjectId(id);
 
     // Buscar al profesor por su ID para verificar si existe
-    const profesor = await Profesor.findOne({ _id: objectIdProfesor });
+    const profesor = await Usuario.findOne({ _id: objectIdProfesor });
 
     if (!profesor) {
       return res.status(404).json({
@@ -65,6 +62,7 @@ let getCursos = async (req, res) => {
       nombre: curso.nombre,
       codigo: curso.codigo,
       seccion: curso.seccion,
+      profesor: curso.profesor,
     }));
 
     res.json({ status: 200, cursos: cursosArray });

@@ -1,36 +1,35 @@
+const Usuario = require("../models/model_usuario");
 const pool = require("../settings/db");
-const Alumno = require("../models/model_alumno");
 
-// agregar alumno 
-let addAlumno = async (req, res) => {
+// agregar usuario
+let addUsuario = async (req, res) => {
 
   const { nombre, user, password, correo, perfil } = req.body;
 
   try {
 
-    const alumno = new Alumno({ nombre, user, password, correo, perfil });
+    const usuario = new Usuario({ nombre, user, password, correo, perfil });
 
-    const savedAlumno = await alumno.save();
+    const savedUsuario = await usuario.save();
 
     res.json({
       status: 200,
-      mensaje: "Alumno guardado exitosamente",
-      savedAlumno,
+      mensaje: "Usuario guardado exitosamente",
+      savedUsuario,
     });
 
   }catch(err) {
-    console.error(err); 
+    console.error(err.stack); 
     res.status(500).json({
       status: 500,
-      mensaje: "Error al guardar el alumno",
+      mensaje: "Error al guardar el usuario",
       err: err.message, 
     });
   }
-
 };
 
-// login alumno
-let loginAlumno = async (req, res) => {
+// login
+let login = async (req, res) => {
   try {
     const { user, password } = req.body;
 
@@ -39,19 +38,20 @@ let loginAlumno = async (req, res) => {
     }
 
     // Realiza la búsqueda en la base de datos por nombre de usuario y contraseña
-    const alumno = await Alumno.findOne({ user, password });
+    const usuario = await Usuario.findOne({ user, password });
 
-    if (!alumno) {
+    if (!usuario) {
       return res.status(404).json({ status: 404, mensaje: "Usuario no encontrado." });
     }
 
     res.json({
       status: 200,
       usuario: {
-        id: alumno.id,
-        nombre: alumno.nombre,
-        user: alumno.user,
-        correo: alumno.correo,
+        _id: usuario.id,
+        nombre: usuario.nombre,
+        user: usuario.user,
+        correo: usuario.correo,
+        perfil: usuario.perfil
       }
     });
   } catch (err) {
@@ -64,6 +64,6 @@ let loginAlumno = async (req, res) => {
 };
 
 module.exports = {
-  addAlumno, 
-  loginAlumno
+  addUsuario, 
+  login
 }

@@ -1,8 +1,9 @@
 const Asistencia = require("../models/model_asistencia");
 const Curso = require("../models/model_curso");
-const Alumno = require("../models/model_alumno");
+const Usuario = require("../models/model_usuario");
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Types;
+const pool = require("../settings/db");
 
 // Método para registrar la asistencia
 const registrarAsistencia = async (req, res) => {
@@ -16,7 +17,7 @@ const registrarAsistencia = async (req, res) => {
     });
 
     if (alumnoId !== undefined) {
-      const alumnoExiste = await Alumno.findById(asistencia.alumno);
+      const alumnoExiste = await Usuario.findById(asistencia.alumno);
       if (!alumnoExiste) {
         return res.status(400).json({
           status: 400,
