@@ -11,5 +11,6 @@ app.get('/listar-cursos', curso.listarCursos);
 app.get('/detalle-curso', curso.detalleCurso);
 app.post('/agregar-usuario', usuario.addUsuario);
 app.post('/login', usuario.login);
+app.post('/recovery', usuario.recovery);
 
 module.exports = app;

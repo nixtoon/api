@@ -63,7 +63,40 @@ let login = async (req, res) => {
   }
 };
 
+let recovery = async (req, res) => {
+  try{
+
+    const { correo } = req.body;
+
+    if (!correo) {
+      return res.status(400).json({
+        status: 400,
+        mensaje: "Se requiere proporcionar el correo del usuario.",
+      });
+    };
+
+    const usuario = await Usuario.findOne({ correo: correo });
+
+    if (!usuario) {
+      return res.status(404).json({
+        status: 404,
+        mensaje: "Usuario no encontrado.",
+      });
+    };
+
+    res.json({ status: 200, usuario: usuario });
+  } catch (err) {
+    console.error("Error al obtener usuario:", err);
+    res.status(500).json({
+      status: 500,
+      mensaje: "Error al obtener usuario",
+      err: err.message,
+    });
+  };
+};
+
 module.exports = {
   addUsuario, 
-  login
+  login,
+  recovery
 }

@@ -7,17 +7,21 @@ const pool = require("../settings/db");
 
 // Método para registrar la asistencia
 const registrarAsistencia = async (req, res) => {
-  const { alumnoId, cursoId, presente } = req.body;
+  const { idAlumno, nombreAlumno, idCurso,  nombreCurso, codigoCurso, seccionCurso, presente } = req.body;
 
   try {
     const asistencia = new Asistencia({
-      alumno: new ObjectId(alumnoId),
-      curso: new ObjectId(cursoId),
+      idAlumno: new ObjectId(idAlumno),
+      nombreAlumno,
+      idCurso: new ObjectId(idCurso),
+      nombreCurso,
+      codigoCurso,
+      seccionCurso,
       presente,
     });
 
-    if (alumnoId !== undefined) {
-      const alumnoExiste = await Usuario.findById(asistencia.alumno);
+    if (idAlumno !== undefined) {
+      const alumnoExiste = await Usuario.findById(asistencia.idAlumno);
       if (!alumnoExiste) {
         return res.status(400).json({
           status: 400,
@@ -26,8 +30,8 @@ const registrarAsistencia = async (req, res) => {
       }
     }
 
-    if (cursoId !== undefined) {
-      const cursoExiste = await Curso.findById(asistencia.curso);
+    if (idCurso !== undefined) {
+      const cursoExiste = await Curso.findById(asistencia.idCurso);
       if (!cursoExiste) {
         return res.status(400).json({
           status: 400,
